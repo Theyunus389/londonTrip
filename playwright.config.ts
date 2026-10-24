@@ -6,7 +6,7 @@ export default defineConfig({
   workers: 1,
   timeout: 45000,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: "http://127.0.0.1:3100",
     trace: "retain-on-failure",
     launchOptions: {
       executablePath:
@@ -23,8 +23,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
-    url: "http://127.0.0.1:3000",
+    command: "npm run start -- --port 3100",
+    url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },

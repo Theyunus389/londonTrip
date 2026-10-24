@@ -121,8 +121,8 @@ export function PlaceForm({
       onOpenChange={(v) => {
         if (!v && !saving && !uploading) onClose();
       }}
-      title={initial.name ? "Edit place" : "A new little discovery"}
-      description="Save somewhere you’d love to go."
+      title={initial.name ? "Edit place" : "Add place"}
+      description="Name, location, photos and notes."
       wide
     >
       <form
@@ -413,38 +413,6 @@ export function PlaceForm({
           </label>
         </div>
         <div className="form-grid">
-          <label>
-            Cost type
-            <select
-              value={p.priceType}
-              onChange={(e) =>
-                field("priceType", e.target.value as Place["priceType"])
-              }
-            >
-              <option value="unknown">Not estimated yet</option>
-              <option value="person">Per person</option>
-              <option value="group">Per group</option>
-              <option value="free">Free</option>
-            </select>
-          </label>
-          <label>
-            Estimated cost (GBP)
-            <input
-              type="number"
-              min="0"
-              max="1000000"
-              step="0.01"
-              disabled={p.priceType === "free" || p.priceType === "unknown"}
-              required={p.priceType === "person" || p.priceType === "group"}
-              value={p.price ?? ""}
-              onChange={(e) =>
-                field(
-                  "price",
-                  e.target.value === "" ? null : Number(e.target.value),
-                )
-              }
-            />
-          </label>
           <label className="span-2">
             Personal notes
             <textarea
@@ -472,14 +440,6 @@ export function PlaceForm({
               onChange={(e) => field("visited", e.target.checked)}
             />
             Visited
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={p.planned}
-              onChange={(e) => field("planned", e.target.checked)}
-            />
-            Include in budget
           </label>
         </div>
         {error && (

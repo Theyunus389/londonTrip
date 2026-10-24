@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 const cache = new Map<string, { time: number; data: unknown }>();
 let last = 0;
 let active = false;
@@ -19,28 +18,6 @@ export async function GET(req: NextRequest) {
       },
       { status: 503 },
     );
-  if (process.env.VERCEL) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
-      publicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      token = req.headers.get("authorization");
-    if (!url || !publicKey || !token?.startsWith("Bearer "))
-      return NextResponse.json(
-        { error: "Sign in to search locations, or use manual entry." },
-        { status: 401 },
-      );
-    const db = createClient(url, publicKey, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const {
-      data: { user },
-      error,
-    } = await db.auth.getUser(token.slice(7));
-    if (error || !user)
-      return NextResponse.json(
-        { error: "Sign in again to search locations." },
-        { status: 401 },
-      );
-  }
   const hit = cache.get(q.toLowerCase());
   if (hit && Date.now() - hit.time < 86400000)
     return NextResponse.json(hit.data);

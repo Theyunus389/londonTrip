@@ -1,75 +1,108 @@
 import { test, expect, type Page } from "@playwright/test";
-async function ready(page: Page) {
+const sample = [
+  {
+    name: "Tower Bridge",
+    images: [
+      "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Tower_Bridge_at_Dawn.jpg/960px-Tower_Bridge_at_Dawn.jpg",
+    ],
+    category: "Activities",
+    subcategory: "Sightseeing & Landmarks",
+    area: "Southwark",
+    lat: 51.5056,
+    lng: -0.0753,
+    notes: "Walk by the river",
+    favorite: true,
+  },
+  {
+    name: "Our cafe",
+    category: "Food",
+    subcategory: "Coffee & Drinks",
+    area: "Soho",
+  },
+];
+async function seed(page: Page) {
   await page.goto("/");
   await expect(
-    page.getByText("Our London trip", { exact: true }).last(),
+    page.getByRole("heading", { name: "Add your places" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "View Tower Bridge" }),
-  ).toBeVisible();
-}
-async function places(page: Page) {
-  await page.getByRole("button", { name: "Explore our places" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Every little discovery" }),
-  ).toBeVisible();
-}
-async function add(page: Page, name: string) {
-  await page.getByRole("button", { name: "Add place", exact: true }).click();
+  await page.getByRole("button", { name: "Import", exact: true }).click();
   const d = page.getByRole("dialog");
-  await d.getByLabel("Place name *").fill(name);
-  return d;
+  await d.getByLabel("Or paste your list").fill(JSON.stringify(sample));
+  await d.getByRole("button", { name: "Preview import" }).click();
+  await d.getByRole("button", { name: "Import 2 places" }).click();
+  await expect(page.locator("article")).toHaveCount(2);
 }
-test("creates, uploads a photo, edits, saves notes, persists flags, and deletes", async ({
+test("simple layout: categories, filters, map, real photos and illustrations", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await ready(page);
-  await places(page);
-  const d = await add(page, "Our test café");
-  await d.getByLabel("Neighbourhood").fill("Soho");
-  await d
-    .getByLabel("A few words about it")
-    .fill("A café for our browser test");
-  await d.getByLabel("Cost type").selectOption("person");
-  await d.getByLabel("Estimated cost (GBP)").fill("12.5");
-  await d.getByLabel("Personal notes").fill("Try a pastry");
-  await d.getByLabel("Favourite", { exact: true }).check();
-  await d.getByLabel("Include in budget").check();
-  await d.getByLabel("Latitude", { exact: true }).fill("51.513");
-  await d.getByLabel("Longitude", { exact: true }).fill("-0.135");
+  await seed(page);
+  await expect(page.getByRole("button", { name: "Trip budget" })).toHaveCount(
+    0,
+  );
+  await expect(page.getByText("Connect your trip")).toHaveCount(0);
+  await expect(
+    page.locator("article").filter({ hasText: "Tower Bridge" }).locator("img"),
+  ).toHaveAttribute("src", "/photos/tower-bridge.webp");
+  await expect(
+    page.locator("article").filter({ hasText: "Our cafe" }),
+  ).toContainText("Category illustration");
+  await page
+    .getByRole("combobox", { name: "Category", exact: true })
+    .selectOption("Food");
+  await page
+    .getByRole("combobox", { name: "Subcategory", exact: true })
+    .selectOption("Coffee & Drinks");
+  await page.getByRole("textbox", { name: "Search places" }).fill("soho");
+  await expect(page.locator("article")).toHaveCount(1);
+  await page.getByRole("checkbox", { name: "Favourites", exact: true }).check();
+  await expect(page.getByText("No matching places")).toBeVisible();
+  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await page.getByRole("link", { name: "Map", exact: true }).click();
+  await expect(page.locator(".leaflet-marker-icon")).toHaveCount(1);
+  await page.locator(".leaflet-marker-icon").click();
+  await expect(page.locator(".map-popup a")).toHaveAttribute(
+    "href",
+    /destination=51.5056%2C-0.0753/,
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(errors).toEqual([]);
+});
+test("CRUD, uploads, notes, flags and reload persistence", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Add place", exact: true }).click();
+  let d = page.getByRole("dialog");
+  await d.getByLabel("Place name *").fill("Test cafe");
   await d
     .locator("input[type=file]")
     .setInputFiles("public/photos/tower-bridge.webp");
   await expect(d.getByRole("button", { name: "Remove photo 1" })).toBeVisible();
+  await expect(d.getByText("Include in budget")).toHaveCount(0);
   await d.getByRole("button", { name: "Save place", exact: true }).click();
-  await expect(d).toHaveCount(0);
-  const card = page.locator("article").filter({ hasText: "Our test café" });
-  await expect(card.locator("img")).toBeVisible();
-  await card
-    .getByRole("button", { name: "Mark visited: Our test café", exact: true })
+  await page
+    .getByRole("button", { name: "Favourite Test cafe", exact: true })
     .click();
-  await card
-    .getByRole("button", { name: "View Our test café", exact: true })
+  await page
+    .getByRole("button", { name: "Mark visited: Test cafe", exact: true })
     .click();
-  const detail = page.getByRole("dialog");
-  await expect(
-    detail.getByRole("button", { name: "Visited", exact: true }),
-  ).toBeVisible();
-  await expect(
-    detail.getByRole("link", { name: "Walking directions in Google Maps" }),
-  ).toHaveAttribute("href", /destination=51.513%2C-0.135/);
-  await detail
-    .getByRole("textbox", { name: "A note for our future selves" })
-    .fill("Book a window table");
-  await detail.getByRole("button", { name: "Save notes" }).click();
-  await expect(page.locator(".toast")).toContainText("Notes saved");
-  await detail.getByRole("button", { name: "Edit details" }).click();
+  await page
+    .getByRole("button", { name: "View Test cafe", exact: true })
+    .click();
+  d = page.getByRole("dialog");
+  await d
+    .getByRole("textbox", { name: "Notes", exact: true })
+    .fill("Remember the table");
+  await d.getByRole("button", { name: "Save notes" }).click();
+  await d.getByRole("button", { name: "Edit", exact: true }).click();
   await page
     .getByRole("dialog")
     .getByLabel("Place name *")
-    .fill("Our edited café");
+    .fill("Updated cafe");
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Save place", exact: true })
@@ -80,185 +113,138 @@ test("creates, uploads a photo, edits, saves notes, persists flags, and deletes"
     .click();
   await page.reload();
   await expect(
-    page.locator("article").filter({ hasText: "Our edited café" }),
+    page.getByRole("button", { name: "Unfavourite Updated cafe" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "View Our edited café" }).click();
+  await expect(
+    page.getByRole("button", { name: "Mark not visited: Updated cafe" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "View Updated cafe" }).click();
   await expect(
     page
       .getByRole("dialog")
-      .getByRole("textbox", { name: "A note for our future selves" }),
-  ).toHaveValue("Book a window table");
+      .getByRole("textbox", { name: "Notes", exact: true }),
+  ).toHaveValue("Remember the table");
+  await expect(
+    page.getByRole("dialog").locator(".detail-gallery img"),
+  ).toHaveAttribute("src", /^data:image\/webp/);
   await page
     .getByRole("dialog")
-    .getByRole("button", { name: "Remove place" })
+    .getByRole("button", { name: "Delete place", exact: true })
     .click();
   await page
-    .getByRole("alertdialog")
-    .getByRole("button", { name: "Remove place" })
+    .getByRole("dialog", { name: "Delete place?" })
+    .getByRole("button", { name: "Delete place", exact: true })
     .click();
-  await expect(
-    page.locator("article").filter({ hasText: "Our edited café" }),
-  ).toHaveCount(0);
-  expect(errors).toEqual([]);
+  await expect(page.locator("article")).toHaveCount(0);
 });
-test("combines filters, switches categories and imports with a duplicate preview", async ({
+test("export and reimport preserve notes, photos and flags; duplicate preview", async ({
   page,
 }) => {
-  await ready(page);
-  await places(page);
-  await page.getByRole("button", { name: "Food & drink", exact: true }).click();
-  await expect(page.locator("article")).toHaveCount(3);
-  await page.getByRole("button", { name: "Filters", exact: true }).click();
-  await page
-    .getByRole("combobox", { name: "Subcategory", exact: true })
-    .selectOption("Breakfast & Brunch");
-  await page.getByLabel("Favourites only").check();
-  await page.getByRole("textbox", { name: "Search places" }).fill("brunch");
-  await expect(page.locator("article")).toHaveCount(1);
-  await page.getByRole("button", { name: "Reset all filters" }).click();
-  await page.getByRole("button", { name: "Import", exact: true }).click();
-  const dialog = page.getByRole("dialog");
-  await dialog
-    .getByRole("textbox", { name: "Or paste your list" })
-    .fill(
-      "name,category,area\nImported spot,Food,Soho\nTower Bridge,Activities,Southwark",
-    );
-  await dialog.getByRole("button", { name: "Preview import" }).click();
-  await expect(dialog.getByText("1 valid places")).toBeVisible();
-  await expect(dialog.getByText(/duplicate “Tower Bridge”/)).toBeVisible();
-  await dialog.getByRole("button", { name: "Import 1 places" }).click();
-  await expect(
-    page.locator("article").filter({ hasText: "Imported spot" }),
-  ).toBeVisible();
-});
-test("updates the planned group budget and excludes wishlist places", async ({
-  page,
-  isMobile,
-}) => {
-  await ready(page);
-  if (isMobile)
-    await page
-      .getByRole("navigation", { name: "Mobile navigation" })
-      .getByText("Budget", { exact: true })
-      .click();
-  else
-    await page
-      .getByRole("navigation", { name: "Main navigation" })
-      .getByText("Trip budget", { exact: true })
-      .click();
-  await expect(page.locator(".budget-total>strong")).toHaveText("£36.00");
-  await page.getByLabel("Include Something sweet in budget").check();
-  await expect(page.locator(".budget-total>strong")).toHaveText("£52.00");
-  await page
-    .getByRole("button", { name: "Edit budget & traveller count" })
-    .click();
-  await page.getByRole("dialog").getByLabel("Travellers").fill("3");
-  await page.getByRole("dialog").getByLabel("Budget limit (GBP)").fill("100");
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Save trip details" })
-    .click();
-  await expect(page.getByRole("dialog").getByRole("status")).toContainText(
-    "Trip settings saved",
-  );
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Close dialog" })
-    .click();
-  await expect(page.locator(".budget-total>strong")).toHaveText("£78.00");
-  await expect(
-    page.getByRole("heading", { name: "£22.00 remaining" }),
-  ).toBeVisible();
-});
-test("shows mapped coordinates, honest account setup, and a responsive navigation", async ({
-  page,
-  isMobile,
-}) => {
-  await ready(page);
-  if (isMobile)
-    await page
-      .getByRole("navigation", { name: "Mobile navigation" })
-      .getByText("Map", { exact: true })
-      .click();
-  else
-    await page
-      .getByRole("navigation", { name: "Main navigation" })
-      .getByText("Explore the map", { exact: true })
-      .click();
-  await expect(page.locator(".leaflet-marker-icon")).toHaveCount(3);
-  await page.locator(".leaflet-marker-icon").first().click();
-  await expect(page.locator(".map-popup")).toBeVisible();
-  await expect(page.locator(".map-popup a")).toHaveAttribute(
-    "href",
-    /google.com\/maps\/dir/,
-  );
+  await seed(page);
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export", exact: true }).click();
+  const file = await download;
+  const stream = await file.createReadStream();
+  const chunks = [];
+  for await (const chunk of stream!) chunks.push(chunk);
+  const backup = JSON.parse(Buffer.concat(chunks).toString());
+  expect(backup).toHaveLength(2);
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true);
-  await page.getByRole("button", { name: "Make it your own" }).click();
+    backup.find((p: { name: string }) => p.name === "Tower Bridge"),
+  ).toMatchObject({
+    notes: "Walk by the river",
+    favorite: true,
+    images: sample[0].images,
+  });
+  await page.getByRole("button", { name: "Import", exact: true }).click();
+  await page
+    .getByRole("dialog")
+    .getByLabel("Or paste your list")
+    .fill(JSON.stringify(backup));
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Preview import" })
+    .click();
+  await expect(page.getByRole("dialog")).toContainText("0 valid places");
   await expect(page.getByRole("dialog")).toContainText(
-    "No account details are collected in demo mode",
+    "2 rows will be skipped",
   );
-  await page.getByRole("button", { name: "Close dialog" }).click();
-  if (isMobile)
-    await expect(
-      page.getByRole("navigation", { name: "Mobile navigation" }),
-    ).toBeVisible();
 });
-test("validates API authentication and geocoding input", async ({
-  request,
-}) => {
-  expect([401, 503]).toContain(
-    (
-      await request.post("/api/trip", { data: { action: "load", payload: {} } })
-    ).status(),
-  );
-  expect((await request.get("/api/search?q=a")).status()).toBe(400);
-});
-
-test("selects a provider result and keeps manual location fields editable", async ({
+test("preserves the old browser list without requiring an account", async ({
   page,
 }) => {
-  await ready(page);
-  await page.route("**/api/search?*", (route) =>
-    route.fulfill({
-      json: {
-        provider: "Nominatim",
-        results: [
+  await page.addInitScript(() => {
+    const time = new Date().toISOString();
+    localStorage.setItem(
+      "london-together-demo-v1",
+      JSON.stringify({
+        settings: { name: "Old trip" },
+        places: [
           {
-            id: "source-example",
-            name: "Tower Bridge",
-            address: "Tower Bridge, London",
-            area: "Southwark",
-            lat: 51.5056,
-            lng: -0.0753,
+            id: "00000000-0000-4000-8000-000000000001",
+            name: "Previous place",
+            category: "Food",
+            subcategory: "Coffee & Drinks",
+            area: "Soho",
+            address: "",
+            description: "",
+            lat: null,
+            lng: null,
+            images: [],
+            attribution: "",
+            price: 12,
+            priceType: "person",
+            currency: "GBP",
+            notes: "Keep these notes",
+            favorite: true,
+            visited: true,
+            planned: true,
+            createdAt: time,
+            updatedAt: time,
           },
         ],
-      },
-    }),
-  );
+      }),
+    );
+  });
+  await page.goto("/");
+  await expect(
+    page.getByRole("button", { name: "View Previous place" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Your previous browser list has been preserved."),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("london-places-v2")!)[0].notes,
+    ),
+  ).toBe("Keep these notes");
+  expect(
+    await page.evaluate(() => localStorage.getItem("london-together-demo-v1")),
+  ).not.toBeNull();
+});
+test("storage save failure is visible and never claims success", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Add your places" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Add place", exact: true }).click();
-  const dialog = page.getByRole("dialog");
-  await dialog
-    .getByRole("textbox", { name: "Find a London location optional" })
-    .fill("Tower Bridge");
-  await dialog.getByRole("button", { name: "Search", exact: true }).click();
-  await dialog
-    .getByRole("button", { name: "Tower Bridge Tower Bridge, London" })
+  await page
+    .getByRole("dialog")
+    .getByLabel("Place name *")
+    .fill("Unsaved place");
+  await page.evaluate(() => {
+    Storage.prototype.setItem = () => {
+      throw new DOMException("Quota exceeded", "QuotaExceededError");
+    };
+  });
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Save place", exact: true })
     .click();
-  await expect(dialog.getByLabel("Place name *")).toHaveValue("Tower Bridge");
-  await expect(dialog.getByLabel("Latitude", { exact: true })).toHaveValue(
-    "51.5056",
+  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
+    "Your changes were not saved",
   );
-  await expect(dialog.getByLabel("Longitude", { exact: true })).toHaveValue(
-    "-0.0753",
-  );
-  await dialog
-    .getByLabel("Address", { exact: true })
-    .fill("Manually corrected address");
-  await expect(dialog.getByLabel("Address", { exact: true })).toHaveValue(
-    "Manually corrected address",
-  );
+  await expect(page.locator("article")).toHaveCount(0);
 });

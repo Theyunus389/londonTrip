@@ -25,19 +25,19 @@ export function ImportDialog({
       onOpenChange={(v) => {
         if (!v && !busy) onClose();
       }}
-      title="Bring your list along"
+      title="Import places"
       description="Import up to 200 places from CSV or JSON. Review everything before saving."
       wide
     >
       <div className="import-help">
         <FileUp size={26} />
         <div>
-          <strong>Your list, a little more organised.</strong>
+          <strong>CSV or JSON</strong>
           <p>
             Required: <code>name</code>, <code>category</code> (Food or
             Activities). Optional: subcategory, address, area, lat, lng,
-            imageUrl, price, priceType, notes, favorite, visited, planned.
-            Currency is GBP.
+            imageUrl, price, priceType, notes, favorite, visited. Currency is
+            GBP.
           </p>
         </div>
       </div>

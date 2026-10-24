@@ -10,6 +10,7 @@ export async function api(action: string, payload: unknown) {
   if (!session) throw Error("Please sign in again");
   const r = await fetch("/api/trip", {
     method: "POST",
+    signal: AbortSignal.timeout(12000),
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${session.access_token}`,

@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "London, together — Your personal trip companion",
+  title: "London places",
   description:
-    "A little less planning. A little more London. Save places, plan your budget and explore with your favourite people.",
-  appleWebApp: { capable: true, title: "London, together" },
+    "Save London places, filter by category, view your map, and import or export your list.",
+  appleWebApp: { capable: true, title: "London places" },
   manifest: "/manifest.webmanifest",
 };
 export const viewport: Viewport = {

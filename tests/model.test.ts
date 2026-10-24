@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { photos, knownPhoto } from "../lib/place-photos";
 import { describe, it, expect } from "vitest";
 import {
   newPlace,
@@ -183,4 +185,17 @@ describe("imports", () => {
       ),
     ).toThrow("200");
   });
+});
+
+it("ships every catalogued image with its attribution and conservative matching", () => {
+  expect(photos.length).toBeGreaterThan(0);
+  for (const p of photos) {
+    expect(existsSync(`public${p.src}`), p.src).toBe(true);
+    expect(p.credit).toContain("creativecommons.org");
+    expect(p.credit).toContain("commons.wikimedia.org");
+  }
+  expect(knownPhoto("Tower Bridge — inside visit")?.src).toBe(
+    "/photos/tower-bridge.webp",
+  );
+  expect(knownPhoto("Unknown restaurant")).toBeUndefined();
 });

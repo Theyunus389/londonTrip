@@ -1,0 +1,146 @@
+export const photos = [
+  {
+    names: ["20 Fenchurch Street", "Sky Garden"],
+    src: "/photos/20-fenchurch-street.webp",
+    filename: "Walkie-Talkie - Sept 2015 (cropped).jpg",
+    credit:
+      "Colin · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Walkie-Talkie_-_Sept_2015_(cropped).jpg",
+  },
+  {
+    names: ["22 Bishopsgate", "Horizon 22"],
+    src: "/photos/22-bishopsgate.webp",
+    filename: "22.Reza 05.jpg",
+    credit:
+      "M R Karim Reza · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:22.Reza_05.jpg",
+  },
+  {
+    names: ["Barbican Centre"],
+    src: "/photos/barbican-centre.webp",
+    filename: "Barbican Lakeside on a summer evening.jpg",
+    credit:
+      "Daniel Case · CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0 · https://commons.wikimedia.org/wiki/File:Barbican_Lakeside_on_a_summer_evening.jpg",
+  },
+  {
+    names: ["Barbican Conservatory"],
+    src: "/photos/barbican-conservatory.webp",
+    filename: "Barbican, London - 8 June 2014 - Andy Mabbett - 81.JPG",
+    credit:
+      "Andy Mabbett · CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0 · https://commons.wikimedia.org/wiki/File:Barbican,_London_-_8_June_2014_-_Andy_Mabbett_-_81.JPG",
+  },
+  {
+    names: ["Battersea Power Station", "Lift 109", "Lift 109 — Battersea"],
+    src: "/photos/battersea-power-station.webp",
+    filename: "Battersea Power Station from the river.jpg",
+    credit:
+      "Alberto Pascual · CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0 · https://commons.wikimedia.org/wiki/File:Battersea_Power_Station_from_the_river.jpg",
+  },
+  {
+    names: ["British Museum"],
+    src: "/photos/british-museum.webp",
+    filename: "British Museum from NE 2.JPG",
+    credit:
+      "Ham · CC BY-SA 3.0 · http://creativecommons.org/licenses/by-sa/3.0/ · https://commons.wikimedia.org/wiki/File:British_Museum_from_NE_2.JPG",
+  },
+  {
+    names: ["Coal Drops Yard"],
+    src: "/photos/coal-drops-yard.webp",
+    filename: "Coal Drops Yard 0606.jpg",
+    credit:
+      "ClemRutter · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Coal_Drops_Yard_0606.jpg",
+  },
+  {
+    names: ["Isabella Plantation"],
+    src: "/photos/isabella-plantation.webp",
+    filename: "Isabella Plantation, Richmond Park, London - April 2011.jpg",
+    credit:
+      "Diliff · CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0 · https://commons.wikimedia.org/wiki/File:Isabella_Plantation,_Richmond_Park,_London_-_April_2011.jpg",
+  },
+  {
+    names: ["National Gallery"],
+    src: "/photos/national-gallery.webp",
+    filename:
+      "Galer\u00eda Nacional, Londres, Inglaterra, 2014-08-07, DD 036.JPG",
+    credit:
+      "Diego Delso · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Galer%C3%ADa_Nacional,_Londres,_Inglaterra,_2014-08-07,_DD_036.JPG",
+  },
+  {
+    names: ["One New Change"],
+    src: "/photos/one-new-change.webp",
+    filename: "One New Change.jpg",
+    credit:
+      "Tom Morris · CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0 · https://commons.wikimedia.org/wiki/File:One_New_Change.jpg",
+  },
+  {
+    names: ["Outernet London"],
+    src: "/photos/outernet-london.webp",
+    filename: "The Outernet facade.jpg",
+    credit:
+      "Matt Brown · CC BY 2.0 · https://creativecommons.org/licenses/by/2.0 · https://commons.wikimedia.org/wiki/File:The_Outernet_facade.jpg",
+  },
+  {
+    names: ["Richmond Park"],
+    src: "/photos/richmond-park.webp",
+    filename: "Ham Bottom in late November - geograph.org.uk - 5214113.jpg",
+    credit:
+      "Stefan Czapski · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Ham_Bottom_in_late_November_-_geograph.org.uk_-_5214113.jpg",
+  },
+  {
+    names: ["Science Museum, London", "Science Museum"],
+    src: "/photos/science-museum-london.webp",
+    filename: "Science Museum, Exhibition Road (cropped).jpg",
+    credit:
+      "Shadowssettle · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Science_Museum,_Exhibition_Road_(cropped).jpg",
+  },
+  {
+    names: ["Sir John Soane's Museum", "Sir John Soane’s Museum"],
+    src: "/photos/sir-john-soane-s-museum.webp",
+    filename: "Sir John Soane Museum (13952611347).jpg",
+    credit:
+      "Tony Hisgett from Birmingham, UK · CC BY 2.0 · https://creativecommons.org/licenses/by/2.0 · https://commons.wikimedia.org/wiki/File:Sir_John_Soane_Museum_(13952611347).jpg",
+  },
+  {
+    names: ["Tate Britain"],
+    src: "/photos/tate-britain.webp",
+    filename: "Tate Britain (5822081512) (2).jpg",
+    credit:
+      "Tony Hisgett from Birmingham, UK · CC BY 2.0 · https://creativecommons.org/licenses/by/2.0 · https://commons.wikimedia.org/wiki/File:Tate_Britain_(5822081512)_(2).jpg",
+  },
+  {
+    names: ["Tate Modern"],
+    src: "/photos/tate-modern.webp",
+    filename: "Tate Modern - Bankside Power Station.jpg",
+    credit:
+      "Acabashi · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Tate_Modern_-_Bankside_Power_Station.jpg",
+  },
+  {
+    names: ["The Shard", "The View from The Shard"],
+    src: "/photos/the-shard.webp",
+    filename: "The Shard at sunset 2017 (cropped).jpg",
+    credit:
+      "Colin · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:The_Shard_at_sunset_2017_(cropped).jpg",
+  },
+  {
+    names: ["Tower Bridge", "Tower Bridge — inside visit"],
+    src: "/photos/tower-bridge.webp",
+    filename: "Tower Bridge at Dawn.jpg",
+    credit:
+      "Fuzzypiggy · CC BY-SA 3.0 · https://creativecommons.org/licenses/by-sa/3.0 · https://commons.wikimedia.org/wiki/File:Tower_Bridge_at_Dawn.jpg",
+  },
+  {
+    names: ["Leighton House"],
+    src: "/photos/leighton-house.webp",
+    filename: "Casa de Leighton, Londres, Inglaterra, 2022-11-26, DD 40.jpg",
+    credit:
+      "Diego Delso · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Casa_de_Leighton,_Londres,_Inglaterra,_2022-11-26,_DD_40.jpg",
+  },
+];
+const normalise = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[’]/g, "'")
+    .replace(/[^a-z0-9]/g, "");
+export function knownPhoto(name: string) {
+  return photos.find((p) =>
+    p.names.some((n) => normalise(n) === normalise(name)),
+  );
+}
