@@ -37,6 +37,8 @@ export function Photo({
           /* A malformed URL falls through to normal image failure handling. */
         }
       }
+      if (src?.startsWith("shared:"))
+        url = `/api/shared/photos?path=${encodeURIComponent(src.slice(7))}`;
       if (src?.startsWith("storage:")) {
         const r = await supabase?.storage
           .from("place-images")

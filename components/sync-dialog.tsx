@@ -1,161 +1,151 @@
 "use client";
 import { useState } from "react";
 import { Dialog } from "./ui/dialog";
-import { supabase } from "@/lib/supabase";
+import type { Place } from "@/lib/model";
 export function SyncDialog({
-  email,
-  status,
-  trips,
-  tripId,
-  onSelect,
+  canEdit,
+  backup,
+  onUnlock,
+  onLock,
+  onPublish,
   onRetry,
   onClose,
 }: {
-  email: string | null;
-  status: string;
-  trips: { id: string; settings: { name: string } }[];
-  tripId: string | null;
-  onSelect: (id: string) => Promise<void>;
+  canEdit: boolean;
+  backup: Place[];
+  onUnlock: (pin: string) => Promise<void>;
+  onLock: () => Promise<void>;
+  onPublish: () => Promise<number>;
   onRetry: () => Promise<void>;
   onClose: () => void;
 }) {
-  const [address, setAddress] = useState(""),
-    [message, setMessage] = useState(""),
+  const [pin, setPin] = useState(""),
+    [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
+    [message, setMessage] = useState("");
+  async function run(fn: () => Promise<void>) {
+    setBusy(true);
+    setError("");
+    try {
+      await fn();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function downloadBackup() {
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }),
+    );
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "previous-browser-backup.json";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   return (
     <Dialog
       open
       onOpenChange={(v) => {
         if (!v && !busy) onClose();
       }}
-      title="Sync across devices"
-      description="Use the same email and list on your PC and phone."
+      title={canEdit ? "Editing unlocked" : "Unlock editing"}
+      description="Everyone sees the same list. Only people with the shared PIN can change it."
     >
-      {!supabase ? (
-        <p>
-          Sync needs the existing Supabase URL and public key in Vercel. Browser
-          saving and import/export still work without them.
-        </p>
-      ) : email ? (
+      {canEdit ? (
         <>
-          <p>
-            Signed in as <strong>{email}</strong>
-          </p>
-          <p className="sync-help">
-            {status === "synced"
-              ? "Your changes are saved to your private account."
-              : status === "syncing"
-                ? "Syncing changes…"
-                : "Sync needs attention. Your browser backup has been kept."}
-          </p>
-          {trips.length > 1 && (
-            <label>
-              Synced list
-              <select
-                value={tripId || ""}
-                onChange={async (e) => {
-                  setBusy(true);
-                  try {
-                    await onSelect(e.target.value);
-                  } catch (e) {
-                    setError((e as Error).message);
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
+          <p>Editing is unlocked on this browser for up to eight hours.</p>
+          <button
+            className="button secondary mt"
+            disabled={busy}
+            onClick={() =>
+              void run(async () => {
+                await onLock();
+                onClose();
+              })
+            }
+          >
+            Lock editing
+          </button>
+          {backup.length > 0 && (
+            <div className="migration-box">
+              <h3>Bring your previous list across</h3>
+              <p>
+                Your browser has {backup.length} saved places. Publishing copies
+                missing places into the list everyone can see. Existing shared
+                places will not be overwritten.
+              </p>
+              <button
+                className="button mt"
                 disabled={busy}
-              >
-                {trips.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.settings.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <div className="detail-actions">
-            <button
-              className="button secondary"
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                try {
-                  await onRetry();
-                  setMessage("Sync checked.");
-                } catch (e) {
-                  setError((e as Error).message);
-                } finally {
-                  setBusy(false);
+                onClick={() =>
+                  void run(async () => {
+                    const n = await onPublish();
+                    setMessage(
+                      `Published ${n} places. The original backup is kept.`,
+                    );
+                  })
                 }
-              }}
-            >
-              Refresh sync
-            </button>
-            <button
-              className="text-button"
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                const r = await supabase!.auth.signOut();
-                setBusy(false);
-                if (r.error) setError(r.error.message);
-                else onClose();
-              }}
-            >
-              Sign out
-            </button>
-          </div>
+              >
+                Publish saved places
+              </button>
+            </div>
+          )}
         </>
       ) : (
-        <>
-          <p className="sync-help">
-            On your PC, sign in first to copy your full browser list to your
-            account. Then sign in with the same email on your phone. Existing
-            browser backups are kept; matching names are merged using the newer
-            saved edit.
-          </p>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setBusy(true);
-              setError("");
-              const r = await supabase!.auth.signInWithOtp({
-                email: address,
-                options: { emailRedirectTo: window.location.origin },
-              });
-              if (r.error) setError(r.error.message);
-              else
-                setMessage(
-                  "Check your email and open the sign-in link on this device. Use the same email on your other devices.",
-                );
-              setBusy(false);
-            }}
-          >
-            <label>
-              Email
-              <input
-                type="email"
-                required
-                autoComplete="email"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </label>
-            <button className="button mt" disabled={busy}>
-              {busy ? "Sending…" : "Send sign-in link"}
-            </button>
-          </form>
-        </>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void run(async () => {
+              await onUnlock(pin);
+              setPin("");
+              setMessage("Editing unlocked.");
+            });
+          }}
+        >
+          <label>
+            Shared editing PIN
+            <input
+              type="password"
+              inputMode="numeric"
+              autoComplete="off"
+              required
+              maxLength={128}
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+            />
+          </label>
+          <button className="button mt" disabled={busy}>
+            {busy ? "Checking…" : "Unlock editing"}
+          </button>
+        </form>
+      )}
+      {backup.length > 0 && (
+        <button className="text-button mt" onClick={downloadBackup}>
+          Download previous browser backup
+        </button>
+      )}
+      <button
+        className="text-button mt"
+        disabled={busy}
+        onClick={() =>
+          void run(async () => {
+            await onRetry();
+            setMessage("Shared list refreshed.");
+          })
+        }
+      >
+        Refresh list
+      </button>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
       )}
       {message && (
         <p className="notice" role="status">
           {message}
-        </p>
-      )}
-      {error && (
-        <p className="error" role="alert">
-          {error}
         </p>
       )}
     </Dialog>

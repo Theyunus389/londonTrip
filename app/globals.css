@@ -914,3 +914,16 @@ small {
     flex: 1 1 calc(50% - 8px);
   }
 }
+.migration-box {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 16px;
+}
+.migration-box h3 {
+  font-size: 15px;
+}
+.migration-box p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 8px;
+}

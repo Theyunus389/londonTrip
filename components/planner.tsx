@@ -65,6 +65,10 @@ export default function Planner() {
     }
   }
   function toggle(p: Place, key: "favorite" | "visited") {
+    if (!t.canEdit) {
+      setSyncOpen(true);
+      return;
+    }
     void run(() => t.save({ ...p, [key]: !p[key] }), "Saved");
   }
   function exportList() {
@@ -82,9 +86,7 @@ export default function Planner() {
     a.download = "london-places.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setMessage(
-      "Exported places and notes. Browser photos are included; cloud photos are private references and need the same account and list.",
-    );
+    setMessage("Exported places, notes and shared photo references.");
   }
   return (
     <div className="planner">
@@ -96,17 +98,11 @@ export default function Planner() {
             onClick={() => setSyncOpen(true)}
           >
             <Cloud size={17} />
-            {t.email
-              ? t.syncStatus === "synced"
-                ? "Synced"
-                : t.syncStatus === "syncing"
-                  ? "Syncing…"
-                  : "Sync issue"
-              : "Sync devices"}
+            {t.canEdit ? "Lock / editing" : "Unlock editing"}
           </button>
           <button
             className="button secondary"
-            onClick={() => setImporting(true)}
+            onClick={() => (t.canEdit ? setImporting(true) : setSyncOpen(true))}
             disabled={t.loading || t.busy}
           >
             <Upload size={17} />
@@ -122,7 +118,9 @@ export default function Planner() {
           </button>
           <button
             className="button"
-            onClick={() => setEditing(newPlace())}
+            onClick={() =>
+              t.canEdit ? setEditing(newPlace()) : setSyncOpen(true)
+            }
             disabled={t.loading || t.busy}
           >
             <Plus size={17} />
@@ -131,13 +129,9 @@ export default function Planner() {
         </div>
       </header>
       <p className="storage-note">
-        {t.email
-          ? t.syncStatus === "synced"
-            ? "Saved to your account. Sign in with the same email on your other devices."
-            : t.syncStatus === "syncing"
-              ? "Syncing with your account…"
-              : "Sync needs attention. Check your connection or open Sync devices to retry."
-          : "Saved in this browser only. Use Sync devices on your PC first, then sign in with the same email on your phone."}
+        {t.synced
+          ? "One shared list on every device. Anyone can view; the PIN is needed to edit."
+          : "Shared list unavailable. Check the connection or server setup. Previous browser backups are kept."}
       </p>
       {(t.error || t.notice) && (
         <div className={t.error ? "error" : "notice"} role="alert">
@@ -363,7 +357,9 @@ export default function Planner() {
               onClick={() =>
                 t.places.length
                   ? setFilters(defaultFilters)
-                  : setImporting(true)
+                  : t.canEdit
+                    ? setImporting(true)
+                    : setSyncOpen(true)
               }
             >
               {t.places.length ? "Reset filters" : "Import a list"}
@@ -375,8 +371,7 @@ export default function Planner() {
         <PlaceForm
           key={editing.id}
           initial={editing}
-          demo={!t.email}
-          tripId={t.tripId || undefined}
+          demo
           onClose={() => setEditing(null)}
           onSave={async (p) => {
             if (
@@ -395,9 +390,15 @@ export default function Planner() {
           key={selected.id}
           p={selected}
           onClose={() => setSelectedId(null)}
-          onEdit={() => setEditing(selected)}
-          onDelete={() => setDeleting(selected.id)}
+          onEdit={() => (t.canEdit ? setEditing(selected) : setSyncOpen(true))}
+          onDelete={() =>
+            t.canEdit ? setDeleting(selected.id) : setSyncOpen(true)
+          }
           onSave={async (p) => {
+            if (!t.canEdit) {
+              setSyncOpen(true);
+              throw Error("Unlock editing first.");
+            }
             await t.save(p);
             setMessage("Saved");
           }}
@@ -405,11 +406,11 @@ export default function Planner() {
       )}
       {syncOpen && (
         <SyncDialog
-          email={t.email}
-          status={t.syncStatus}
-          trips={t.trips}
-          tripId={t.tripId}
-          onSelect={t.selectTrip}
+          canEdit={t.canEdit}
+          backup={t.backup}
+          onUnlock={t.unlock}
+          onLock={t.lock}
+          onPublish={t.publishBackup}
           onRetry={t.retry}
           onClose={() => setSyncOpen(false)}
         />
@@ -419,8 +420,8 @@ export default function Planner() {
           places={t.places}
           onClose={() => setImporting(false)}
           onImport={async (p) => {
-            await t.importPlaces(p);
-            setMessage(`Imported ${p.length} places`);
+            const count = await t.importPlaces(p);
+            setMessage(`Imported ${count ?? p.length} places`);
           }}
         />
       )}
@@ -430,7 +431,7 @@ export default function Planner() {
           if (!open) setDeleting(null);
         }}
         title="Delete place?"
-        description="This removes the place and its notes from this browser. Export a backup first if you want to keep it."
+        description="This removes the place and its notes from the shared list for everyone. Export a backup first if you want to keep it."
       >
         <div className="modal-footer">
           <button

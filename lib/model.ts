@@ -25,6 +25,7 @@ const image = z
     (v) =>
       /^https?:\/\//.test(v) ||
       /^\/photos\/[a-zA-Z0-9_-]+\.webp$/.test(v) ||
+      /^shared:[0-9a-f-]{36}\.(webp|png|jpg)$/.test(v) ||
       /^storage:[\w/-]+\.[a-zA-Z0-9]+$/.test(v) ||
       /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(v),
     "Use an HTTPS image URL or upload an image",
