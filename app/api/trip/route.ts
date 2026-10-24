@@ -93,7 +93,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
     const tripId = z.string().uuid().parse(p.tripId);
-    if (body.action === "save" || body.action === "import") {
+    if (
+      body.action === "save" ||
+      body.action === "import" ||
+      body.action === "save-many"
+    ) {
       const items =
         body.action === "save"
           ? [placeSchema.parse(p.place)]
@@ -104,7 +108,7 @@ export async function POST(req: NextRequest) {
       const r = await db.rpc("save_places", {
         target_trip: tripId,
         items,
-        allow_update: body.action === "save",
+        allow_update: body.action !== "import",
       });
       check(r.error);
     } else if (body.action === "delete") {

@@ -900,3 +900,17 @@ small {
     scroll-behavior: auto !important;
   }
 }
+.sync-help {
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 14px 0;
+  color: var(--muted);
+}
+@media (max-width: 560px) {
+  .header-actions {
+    flex-wrap: wrap;
+  }
+  .header-actions .button {
+    flex: 1 1 calc(50% - 8px);
+  }
+}

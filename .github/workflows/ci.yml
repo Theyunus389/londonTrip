@@ -8,6 +8,10 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    env:
+      # Public dummy identifiers: browser tests intercept all sync transport.
+      NEXT_PUBLIC_SUPABASE_URL: https://sync-test.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: test-public-key
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

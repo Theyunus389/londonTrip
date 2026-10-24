@@ -15,6 +15,7 @@ import {
   Trash2,
   X,
   StickyNote,
+  Cloud,
 } from "lucide-react";
 import { usePlaces } from "@/lib/use-places";
 import {
@@ -31,6 +32,7 @@ import { Dialog } from "./ui/dialog";
 import { Photo } from "./photo";
 import { PlaceForm } from "./place-form";
 import { ImportDialog } from "./import-dialog";
+import { SyncDialog } from "./sync-dialog";
 import { knownPhoto } from "@/lib/place-photos";
 const TripMap = dynamic(() => import("./map"), {
   ssr: false,
@@ -43,6 +45,7 @@ export default function Planner() {
     [editing, setEditing] = useState<Place | null>(null),
     [selectedId, setSelectedId] = useState<string | null>(null),
     [importing, setImporting] = useState(false),
+    [syncOpen, setSyncOpen] = useState(false),
     [deleting, setDeleting] = useState<string | null>(null),
     [message, setMessage] = useState("");
   const selected = t.places.find((p) => p.id === selectedId);
@@ -80,7 +83,7 @@ export default function Planner() {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     setMessage(
-      "Exported all places, notes and photo references. Uploaded browser photos are included. Older private cloud photos still need their original access.",
+      "Exported places and notes. Browser photos are included; cloud photos are private references and need the same account and list.",
     );
   }
   return (
@@ -90,7 +93,21 @@ export default function Planner() {
         <div className="header-actions">
           <button
             className="button secondary"
+            onClick={() => setSyncOpen(true)}
+          >
+            <Cloud size={17} />
+            {t.email
+              ? t.syncStatus === "synced"
+                ? "Synced"
+                : t.syncStatus === "syncing"
+                  ? "Syncing…"
+                  : "Sync issue"
+              : "Sync devices"}
+          </button>
+          <button
+            className="button secondary"
             onClick={() => setImporting(true)}
+            disabled={t.loading || t.busy}
           >
             <Upload size={17} />
             Import
@@ -98,7 +115,7 @@ export default function Planner() {
           <button
             className="button secondary"
             onClick={exportList}
-            disabled={t.loading}
+            disabled={t.loading || t.busy}
           >
             <Download size={17} />
             Export
@@ -106,7 +123,7 @@ export default function Planner() {
           <button
             className="button"
             onClick={() => setEditing(newPlace())}
-            disabled={t.loading}
+            disabled={t.loading || t.busy}
           >
             <Plus size={17} />
             Add place
@@ -114,8 +131,13 @@ export default function Planner() {
         </div>
       </header>
       <p className="storage-note">
-        Saved in this browser. Export a backup to keep your list or move it to
-        another device.
+        {t.email
+          ? t.syncStatus === "synced"
+            ? "Saved to your account. Sign in with the same email on your other devices."
+            : t.syncStatus === "syncing"
+              ? "Syncing with your account…"
+              : "Sync needs attention. Check your connection or open Sync devices to retry."
+          : "Saved in this browser only. Use Sync devices on your PC first, then sign in with the same email on your phone."}
       </p>
       {(t.error || t.notice) && (
         <div className={t.error ? "error" : "notice"} role="alert">
@@ -291,6 +313,7 @@ export default function Planner() {
                     <button
                       className={`icon-button ${p.favorite ? "selected" : ""}`}
                       aria-label={`${p.favorite ? "Unfavourite" : "Favourite"} ${p.name}`}
+                      disabled={t.busy || t.loading}
                       aria-pressed={p.favorite}
                       onClick={() => toggle(p, "favorite")}
                     >
@@ -302,6 +325,7 @@ export default function Planner() {
                     <button
                       className={`status-button ${p.visited ? "selected" : ""}`}
                       aria-label={`Mark ${p.visited ? "not visited" : "visited"}: ${p.name}`}
+                      disabled={t.busy || t.loading}
                       aria-pressed={p.visited}
                       onClick={() => toggle(p, "visited")}
                     >
@@ -351,7 +375,8 @@ export default function Planner() {
         <PlaceForm
           key={editing.id}
           initial={editing}
-          demo
+          demo={!t.email}
+          tripId={t.tripId || undefined}
           onClose={() => setEditing(null)}
           onSave={async (p) => {
             if (
@@ -376,6 +401,17 @@ export default function Planner() {
             await t.save(p);
             setMessage("Saved");
           }}
+        />
+      )}
+      {syncOpen && (
+        <SyncDialog
+          email={t.email}
+          status={t.syncStatus}
+          trips={t.trips}
+          tripId={t.tripId}
+          onSelect={t.selectTrip}
+          onRetry={t.retry}
+          onClose={() => setSyncOpen(false)}
         />
       )}
       {importing && (
