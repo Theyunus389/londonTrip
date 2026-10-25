@@ -20,8 +20,10 @@ export default function Privacy() {
       </p>
       <h2>Maps and photographs</h2>
       <p>
-        The map uses OpenStreetMap or the configured tile provider. Requests to
-        external image and map providers can disclose your IP address to them.
+        The map uses OpenFreeMap with OpenStreetMap/OpenMapTiles data, with
+        OpenStreetMap raster tiles as a fallback, or the configured tile
+        provider. Requests to external image and map providers can disclose your
+        IP address to them.
       </p>
       <p>
         Places without an uploaded or built-in photograph may be looked up using

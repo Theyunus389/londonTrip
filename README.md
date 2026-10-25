@@ -66,7 +66,7 @@ Optional settings:
 
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: only for authorised recovery of older account-based data in an already signed-in browser; not needed for the new public shared flow.
 - `GEOAPIFY_API_KEY`: optional server-only key for production location search. Manual entry needs no key. Limit provider quota for a public site.
-- `NEXT_PUBLIC_MAP_TILE_URL`, `NEXT_PUBLIC_MAP_ATTRIBUTION`: optional authorised tile provider; defaults to OpenStreetMap with attribution.
+- `NEXT_PUBLIC_MAP_TILE_URL`, `NEXT_PUBLIC_MAP_ATTRIBUTION`: optional raster tile provider and its required attribution; otherwise the map uses OpenFreeMap's minimal Positron vector style, with OSM/OpenMapTiles/OpenFreeMap attribution. No account or API key is required. MapLibre runs only in the lazy-loaded map view and uses a same-origin bundled worker. Unsupported WebGL, a map-source error or a 15-second load timeout falls back to standard OSM raster tiles with softer colours. Existing markers, photos, filtering and walking directions are retained. The map has a Google-style light appearance; it does not use Google Maps APIs.
 
 Leaflet map tiles and geocoding require connectivity. Unavailable tiles/search are reported. Google walking directions open separately. Respect [OSM tile policy](https://operations.osmfoundation.org/policies/tiles/) and [Nominatim policy](https://operations.osmfoundation.org/policies/nominatim/). Local explicit Nominatim searches are throttled/cached; serverless production uses optional Geoapify. External image providers see browser requests. The PIN/service key stay server-side.
 
