@@ -254,12 +254,80 @@ small {
   overflow: hidden;
 }
 .card-photo {
+  position: relative;
   display: block;
   width: 100%;
   border: 0;
   padding: 0;
   background: #edf0eb;
   text-align: left;
+}
+.photo-open {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  z-index: 1;
+}
+.photo-open:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+}
+.google-photo-credit {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background: #fff;
+  color: #333;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 10px;
+}
+.google-photo-credit img {
+  display: block;
+  width: 120px;
+  height: 14px;
+  object-fit: contain;
+}
+.google-photo-credit a {
+  position: relative;
+  z-index: 3;
+}
+.google-photo-credit a:not(:first-child) {
+  text-decoration: underline;
+}
+.site-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.policy-page {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 20px;
+  line-height: 1.7;
+}
+.policy-page h1 {
+  font-size: 24px;
+}
+.policy-page h2 {
+  font-size: 18px;
+  margin-top: 24px;
+}
+.policy-page p {
+  margin: 14px 0;
+}
+.policy-page a {
+  text-decoration: underline;
 }
 .photo {
   height: 180px;

@@ -277,17 +277,19 @@ export default function Planner() {
           <div className="place-grid">
             {visible.map((p) => (
               <article className="place-card" key={p.id}>
-                <button
-                  className="card-photo"
-                  onClick={() => setSelectedId(p.id)}
-                  aria-label={`View ${p.name}`}
-                >
+                <div className="card-photo">
                   <Photo
                     src={p.images[0]}
                     name={p.name}
                     category={p.subcategory || p.category}
+                    placeId={p.id}
                   />
-                </button>
+                  <button
+                    className="photo-open"
+                    onClick={() => setSelectedId(p.id)}
+                    aria-label={`View ${p.name}`}
+                  />
+                </div>
                 <div className="card-body">
                   <div className="card-meta">
                     {p.category} · {p.subcategory || "Uncategorised"}
@@ -389,6 +391,7 @@ export default function Planner() {
         <Details
           key={selected.id}
           p={selected}
+          automaticPhotos={view !== "map"}
           onClose={() => setSelectedId(null)}
           onEdit={() => (t.canEdit ? setEditing(selected) : setSyncOpen(true))}
           onDelete={() =>
@@ -454,6 +457,10 @@ export default function Planner() {
           </button>
         </div>
       </Dialog>
+      <footer className="site-footer">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </footer>
       <div
         className={message ? "toast" : "sr-only"}
         role="status"
@@ -475,12 +482,14 @@ export default function Planner() {
 }
 function Details({
   p,
+  automaticPhotos,
   onClose,
   onEdit,
   onDelete,
   onSave,
 }: {
   p: Place;
+  automaticPhotos: boolean;
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -507,6 +516,7 @@ function Details({
             src={src}
             name={p.name}
             category={p.subcategory || p.category}
+            placeId={automaticPhotos && i === 0 ? p.id : undefined}
           />
         ))}
       </div>

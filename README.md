@@ -47,6 +47,8 @@ Export works without the PIN and downloads all shared places/notes/flags and ima
 
 Nineteen matched landmark photos plus the existing Hyde Park photograph are bundled locally with credits in `PHOTO_CREDITS.md`. Other cards use clearly labelled original category illustrations. They are not presented as venue photos. Upload your own licensed JPEG/PNG/WebP (8 MB input, resized to 1400px) or use an authorised image URL. Shared stored photos must be below 2 MB each. Actual file signatures are checked on upload. The photo bucket remains private; a public read-only server route serves only the shared bucket's UUID-named images, never arbitrary private trip paths. Removing a place does not automatically purge its stored photo, to avoid deleting an image referenced elsewhere. Clean up unused shared images manually after backing them up.
 
+**Optional automatic Google photos:** follow [GOOGLE_PHOTOS_SETUP.md](GOOGLE_PHOTOS_SETUP.md). Enable Places API (New), run `202610250003_google_photos.sql`, set server-only `GOOGLE_PLACES_API_KEY` in Vercel and redeploy. Missing photos are fetched as cards become visible, with contributor credits; existing photos stay preferred. A durable shared cap allows at most 800 lookup/photo pairs per UTC month (optionally lower). Google billing is required and free usage is not guaranteed. Google images appear only in the Places view, are not stored/exported, and gracefully fall back when unavailable. `/privacy` and `/terms` describe the external services.
+
 ## Development
 
 Node.js 24 LTS is pinned in `.nvmrc`.
@@ -62,6 +64,8 @@ Optional settings:
 
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: only for authorised recovery of older account-based data in an already signed-in browser; not needed for the new public shared flow.
 - `GEOAPIFY_API_KEY`: optional server-only key for production location search. Manual entry needs no key. Limit provider quota for a public site.
+- `GOOGLE_PLACES_API_KEY`: optional server-only Places API (New) key for automatic photographs; Google billing and the photo counter migration are required.
+- `GOOGLE_PLACES_MONTHLY_LIMIT`: optional request limit from 0 to 800; defaults to 800 across all visitors. Use 0 to disable Google calls.
 - `NEXT_PUBLIC_MAP_TILE_URL`, `NEXT_PUBLIC_MAP_ATTRIBUTION`: optional authorised tile provider; defaults to OpenStreetMap with attribution.
 
 Leaflet map tiles and geocoding require connectivity. Unavailable tiles/search are reported. Google walking directions open separately. Respect [OSM tile policy](https://operations.osmfoundation.org/policies/tiles/) and [Nominatim policy](https://operations.osmfoundation.org/policies/nominatim/). Local explicit Nominatim searches are throttled/cached; serverless production uses optional Geoapify. External image providers see browser requests. The PIN/service key stay server-side.
