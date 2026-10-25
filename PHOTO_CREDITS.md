@@ -33,3 +33,17 @@ Resized to fit 1000 × 800 and converted to WebP. Each file retains its original
 | `public/photos/tate-modern.webp`             | Acabashi · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Tate_Modern_-_Bankside_Power_Station.jpg                              |
 | `public/photos/the-shard.webp`               | Colin · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:The_Shard_at_sunset_2017_(cropped).jpg                                   |
 | `public/photos/leighton-house.webp`          | Diego Delso · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Casa_de_Leighton,_Londres,_Inglaterra,_2022-11-26,_DD_40.jpg       |
+
+## Free photo additions — 25 October 2026
+
+Retrieved from Wikimedia Commons, resized to fit 1000 × 800 and converted to WebP. The Post Building photo shows the building exterior rather than its rooftop. Licence and original contributor credits are preserved.
+
+| File                                            | Author, licence and original source                                                                                                                                                                                  |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `public/photos/natural-history-museum.webp`     | Julian Herzog (Website) · CC BY 4.0 · https://creativecommons.org/licenses/by/4.0 · https://commons.wikimedia.org/wiki/File:Natural_History_Museum_London_South_Facade_2020_01.jpg                                   |
+| `public/photos/victoria-and-albert-museum.webp` | APK · CC BY 4.0 · https://creativecommons.org/licenses/by/4.0 · https://commons.wikimedia.org/wiki/File:Exterior_of_the_Victoria_and_Albert_Museum_-_2026.jpg                                                        |
+| `public/photos/wallace-collection.webp`         | Anthony O'Neil · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Front_entrance_to_the_Wallace_Collection,_Manchester_Square_-_geograph.org.uk_-_1600012.jpg |
+| `public/photos/kyoto-garden.webp`               | Kyoto Garden, Holland Park by Bryn Holmes · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Kyoto_Garden,_Holland_Park_-_geograph.org.uk_-_7620562.jpg       |
+| `public/photos/garden-at-120.webp`              | Andy Li · CC0 · http://creativecommons.org/publicdomain/zero/1.0/deed.en · https://commons.wikimedia.org/wiki/File:The_Garden_at_120,_London_2026-09-22_(3).jpg                                                      |
+| `public/photos/post-building.webp`              | Tom Page · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:The_Post_Building,_London_2024-02-10.jpg                                                          |
+| `public/photos/sexy-fish.webp`                  | Sexy Fish, Berkeley Square by N Chadwick · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Sexy_Fish,_Berkeley_Square_-_geograph.org.uk_-_5567725.jpg        |

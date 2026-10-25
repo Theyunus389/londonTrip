@@ -4,54 +4,50 @@
 import { useEffect, useRef, useState } from "react";
 import { knownPhoto } from "@/lib/place-photos";
 import { supabase } from "@/lib/supabase";
-import type { GooglePhoto } from "@/lib/google-photos";
+import type { AutomaticPhoto } from "@/lib/automatic-photos";
+import { automaticPhoto } from "@/lib/client/automatic-photos";
 export function Photo({
   src,
   name,
   category,
   placeId,
+  locationKey = "",
   className = "",
 }: {
   src?: string;
   name: string;
   category: string;
   placeId?: string;
+  locationKey?: string;
   className?: string;
 }) {
   const [resolved, setResolved] = useState("");
   const [failed, setFailed] = useState(false);
-  const [google, setGoogle] = useState<GooglePhoto | null>(null);
+  const [automaticResult, setAutomaticResult] = useState<AutomaticPhoto | null>(
+    null,
+  );
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let active = true;
     let observer: IntersectionObserver | undefined;
-    const controller = new AbortController();
     // Only request missing photos as the card approaches the viewport. There is
-    // no periodic Google refresh, persistent cache or Google data in exports.
+    // no periodic refresh. Current-session results are shared with map/details.
     const automatic = () => {
       if (!placeId || !container.current) return;
       observer = new IntersectionObserver(
         (entries) => {
           if (!entries.some((entry) => entry.isIntersecting)) return;
           observer?.disconnect();
-          void fetch("/api/place-photo", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: placeId }),
-            cache: "no-store",
-            signal: controller.signal,
-          })
-            .then(async (r) => {
-              if (!r.ok) return;
-              const data = (await r.json()) as { photo?: GooglePhoto };
-              if (active && data.photo) {
-                setGoogle(data.photo);
-                setResolved(data.photo.src);
+          void automaticPhoto(placeId, `${name}:${locationKey}`)
+            .then((photo) => {
+              if (active && photo) {
+                setAutomaticResult(photo);
+                setResolved(photo.src);
                 setFailed(false);
               }
             })
             .catch(() => {
-              /* Keep the category illustration on network/API failure. */
+              /* Keep the category illustration on network failure. */
             });
         },
         { rootMargin: "100px" },
@@ -87,7 +83,7 @@ export function Photo({
       if (active) {
         setFailed(false);
         setResolved(url);
-        setGoogle(null);
+        setAutomaticResult(null);
         if (!url) automatic();
       }
     };
@@ -97,11 +93,10 @@ export function Photo({
       : undefined;
     return () => {
       active = false;
-      controller.abort();
       observer?.disconnect();
       clearInterval(timer);
     };
-  }, [src, name, placeId]);
+  }, [src, name, placeId, locationKey]);
   return (
     <div
       ref={container}
@@ -117,7 +112,7 @@ export function Photo({
             const fallback = knownPhoto(name)?.src;
             if (fallback && resolved !== fallback) setResolved(fallback);
             else setFailed(true);
-            setGoogle(null);
+            setAutomaticResult(null);
           }}
         />
       ) : (
@@ -140,36 +135,23 @@ export function Photo({
           </span>
         </div>
       )}
-      {google && !failed && (
-        <span className="google-photo-credit">
+      {automaticResult && !failed && (
+        <span className="automatic-photo-credit">
           <a
-            href="https://maps.google.com/"
+            href={automaticResult.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Google Maps"
           >
-            <img
-              src="https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white3.png"
-              alt="Powered by Google"
-              width={120}
-              height={14}
-              referrerPolicy="no-referrer"
-            />
+            Wikimedia Commons
           </a>
-          {google.authors.map((author, i) =>
-            author.uri ? (
-              <a
-                key={i}
-                href={author.uri}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {author.name}
-              </a>
-            ) : (
-              <span key={i}>{author.name}</span>
-            ),
-          )}
+          <span>{automaticResult.author}</span>
+          <a
+            href={automaticResult.licenseUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {automaticResult.license}
+          </a>
         </span>
       )}
     </div>

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { placeSchema } from "@/lib/model";
 import { knownPhoto } from "@/lib/place-photos";
 import { sharedDb, sameOrigin } from "@/lib/server/shared";
-import { findGooglePhoto } from "@/lib/server/google-photos";
+import { findWikimediaPhoto } from "@/lib/server/wikimedia-photos";
 
 const reply = (photo: unknown = null, reason?: string, status = 200) =>
   NextResponse.json(
@@ -19,8 +19,6 @@ const reply = (photo: unknown = null, reason?: string, status = 200) =>
 
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return reply(null, "origin", 403);
-  const key = process.env.GOOGLE_PLACES_API_KEY;
-  if (!key) return reply(null, "disabled");
   try {
     const raw = await req.text();
     if (raw.length > 100) return reply(null, "invalid", 400);
@@ -37,18 +35,7 @@ export async function POST(req: NextRequest) {
     const place = placeSchema.parse(row.data.data);
     if (place.images.length || knownPhoto(place.name))
       return reply(null, "existing_photo");
-    // Atomic database reservation shared across every visitor and server instance.
-    // A reservation permits at most one Text Search and one Photo Media request.
-    const configured = Number(process.env.GOOGLE_PLACES_MONTHLY_LIMIT || 800);
-    const limit = Number.isFinite(configured)
-      ? Math.max(0, Math.min(800, Math.floor(configured)))
-      : 800;
-    const budget = await db.rpc("reserve_google_photo_request", {
-      request_limit: limit,
-    });
-    if (budget.error) return reply(null, "setup_required");
-    if (!budget.data) return reply(null, "monthly_limit");
-    return reply(await findGooglePhoto(place, key));
+    return reply(await findWikimediaPhoto(place));
   } catch (error) {
     if (error instanceof z.ZodError || error instanceof SyntaxError)
       return reply(null, "invalid", 400);

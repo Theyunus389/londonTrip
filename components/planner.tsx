@@ -283,6 +283,7 @@ export default function Planner() {
                     name={p.name}
                     category={p.subcategory || p.category}
                     placeId={p.id}
+                    locationKey={[p.address, p.lat, p.lng].join("|")}
                   />
                   <button
                     className="photo-open"
@@ -391,7 +392,6 @@ export default function Planner() {
         <Details
           key={selected.id}
           p={selected}
-          automaticPhotos={view !== "map"}
           onClose={() => setSelectedId(null)}
           onEdit={() => (t.canEdit ? setEditing(selected) : setSyncOpen(true))}
           onDelete={() =>
@@ -482,14 +482,12 @@ export default function Planner() {
 }
 function Details({
   p,
-  automaticPhotos,
   onClose,
   onEdit,
   onDelete,
   onSave,
 }: {
   p: Place;
-  automaticPhotos: boolean;
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -516,7 +514,8 @@ function Details({
             src={src}
             name={p.name}
             category={p.subcategory || p.category}
-            placeId={automaticPhotos && i === 0 ? p.id : undefined}
+            placeId={i === 0 ? p.id : undefined}
+            locationKey={[p.address, p.lat, p.lng].join("|")}
           />
         ))}
       </div>

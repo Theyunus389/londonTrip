@@ -90,7 +90,13 @@ export default function TripMap({
           >
             <Popup>
               <div className="map-popup">
-                <Photo src={p.images[0]} name={p.name} category={p.category} />
+                <Photo
+                  src={p.images[0]}
+                  name={p.name}
+                  category={p.category}
+                  placeId={p.id}
+                  locationKey={[p.address, p.lat, p.lng].join("|")}
+                />
                 <strong>{p.name}</strong>
                 <p>{p.area || p.category}</p>
                 <button className="button small" onClick={() => onSelect(p)}>

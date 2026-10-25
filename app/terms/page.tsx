@@ -16,25 +16,18 @@ export default function Terms() {
         entries. Export a backup of information you want to keep.
       </p>
       <p>
-        Google Maps Platform features are subject to the{" "}
+        Wikimedia photographs retain the contributor and licence information
+        shown beside the image or in the place details. Follow the linked
+        licence and source page for reuse conditions. The source services are
+        subject to the{" "}
         <a
-          href="https://maps.google.com/help/terms_maps/"
+          href="https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Google Maps/Google Earth Additional Terms of Service
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://policies.google.com/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Google Terms of Service
+          Wikimedia Terms of Use
         </a>
-        . Google photographs belong to their respective contributors. Their
-        display does not grant permission to download, redistribute or relicense
-        them.
+        .
       </p>
       <p>
         See the <a href="/privacy">privacy page</a> for information about

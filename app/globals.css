@@ -274,7 +274,7 @@ small {
   outline: 3px solid var(--ink);
   outline-offset: -3px;
 }
-.google-photo-credit {
+.automatic-photo-credit {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -288,18 +288,13 @@ small {
   flex-wrap: wrap;
   gap: 4px 8px;
   font-size: 10px;
+  overflow-wrap: anywhere;
 }
-.google-photo-credit img {
-  display: block;
-  width: 120px;
-  height: 14px;
-  object-fit: contain;
-}
-.google-photo-credit a {
+.automatic-photo-credit a {
   position: relative;
   z-index: 3;
 }
-.google-photo-credit a:not(:first-child) {
+.automatic-photo-credit a {
   text-decoration: underline;
 }
 .site-footer {

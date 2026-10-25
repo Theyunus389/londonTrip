@@ -133,6 +133,78 @@ export const photos = [
     credit:
       "Diego Delso · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0 · https://commons.wikimedia.org/wiki/File:Casa_de_Leighton,_Londres,_Inglaterra,_2022-11-26,_DD_40.jpg",
   },
+  {
+    names: ["Natural History Museum", "Natural History Museum, London"],
+    src: "/photos/natural-history-museum.webp",
+    filename: "Natural History Museum London South Facade 2020 01.jpg",
+    credit:
+      "Julian Herzog (Website) · CC BY 4.0 · https://creativecommons.org/licenses/by/4.0 · https://commons.wikimedia.org/wiki/File:Natural_History_Museum_London_South_Facade_2020_01.jpg",
+  },
+
+  {
+    names: ["Victoria and Albert Museum", "V&A", "V&A Museum"],
+    src: "/photos/victoria-and-albert-museum.webp",
+    filename: "Exterior of the Victoria and Albert Museum - 2026.jpg",
+    credit:
+      "APK · CC BY 4.0 · https://creativecommons.org/licenses/by/4.0 · https://commons.wikimedia.org/wiki/File:Exterior_of_the_Victoria_and_Albert_Museum_-_2026.jpg",
+  },
+
+  {
+    names: ["Wallace Collection", "The Wallace Collection"],
+    src: "/photos/wallace-collection.webp",
+    filename:
+      "Front entrance to the Wallace Collection, Manchester Square - geograph.org.uk - 1600012.jpg",
+    credit:
+      "Anthony O'Neil · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Front_entrance_to_the_Wallace_Collection,_Manchester_Square_-_geograph.org.uk_-_1600012.jpg",
+  },
+
+  {
+    names: [
+      "Kyoto Garden",
+      "Kyoto Garden — Holland Park",
+      "Kyoto Garden, Holland Park",
+    ],
+    src: "/photos/kyoto-garden.webp",
+    filename: "Kyoto Garden, Holland Park - geograph.org.uk - 7620562.jpg",
+    credit:
+      "Kyoto Garden, Holland Park by Bryn Holmes · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Kyoto_Garden,_Holland_Park_-_geograph.org.uk_-_7620562.jpg",
+  },
+
+  {
+    names: ["The Garden at 120", "Garden at 120"],
+    src: "/photos/garden-at-120.webp",
+    filename: "The Garden at 120, London 2026-09-22 (3).jpg",
+    credit:
+      "Andy Li · CC0 · http://creativecommons.org/publicdomain/zero/1.0/deed.en · https://commons.wikimedia.org/wiki/File:The_Garden_at_120,_London_2026-09-22_(3).jpg",
+  },
+
+  {
+    names: [
+      "The Post Building Rooftop Garden",
+      "Post Building Rooftop Garden",
+      "The Post Building",
+    ],
+    src: "/photos/post-building.webp",
+    filename: "The Post Building, London 2024-02-10.jpg",
+    credit:
+      "Tom Page · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:The_Post_Building,_London_2024-02-10.jpg",
+  },
+
+  {
+    names: ["Sexy Fish", "Sexy Fish London", "Sexy Fish — Berkeley Square"],
+    src: "/photos/sexy-fish.webp",
+    filename: "Sexy Fish, Berkeley Square - geograph.org.uk - 5567725.jpg",
+    credit:
+      "Sexy Fish, Berkeley Square by N Chadwick · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0 · https://commons.wikimedia.org/wiki/File:Sexy_Fish,_Berkeley_Square_-_geograph.org.uk_-_5567725.jpg",
+  },
+
+  {
+    names: ["Hyde Park", "Hyde Park, London"],
+    src: "/photos/hyde-park.webp",
+    filename: "Hyde Park London from the air.jpg",
+    credit:
+      "@LondonNPC #NationalParkCity · CC BY 2.0 · https://creativecommons.org/licenses/by/2.0/ · https://commons.wikimedia.org/wiki/File:Hyde_Park_London_from_the_air.jpg",
+  },
 ];
 const normalise = (name: string) =>
   name

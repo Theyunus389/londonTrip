@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { newPlace } from "../../lib/model";
 import { sharedFixture } from "./shared-fixture";
 
-test("automatic photos load lazily for public viewers with credits, stay out of exports and the map, and fail gracefully", async ({
+test("free photos load lazily, reuse cached results in details and map, show licence credits and fail gracefully", async ({
   page,
 }) => {
   const places = Array.from({ length: 18 }, (_, i) => ({
@@ -17,10 +17,7 @@ test("automatic photos load lazily for public viewers with credits, stay out of 
   await server.attach(page);
   const ids: string[] = [];
   const image = readFileSync("public/photos/tower-bridge.webp");
-  await page.route("https://lh3.googleusercontent.com/**", (route) =>
-    route.fulfill({ contentType: "image/webp", body: image }),
-  );
-  await page.route("https://maps.gstatic.com/**", (route) =>
+  await page.route("https://upload.wikimedia.org/**", (route) =>
     route.fulfill({ contentType: "image/webp", body: image }),
   );
   await page.route("**/api/place-photo", async (route) => {
@@ -32,13 +29,12 @@ test("automatic photos load lazily for public viewers with credits, stay out of 
           id === places[1].id
             ? null
             : {
-                src: `https://lh3.googleusercontent.com/places/${id}`,
-                authors: [
-                  {
-                    name: "Example Photographer",
-                    uri: "https://maps.google.com/contributor/example",
-                  },
-                ],
+                src: `https://upload.wikimedia.org/wikipedia/commons/0/00/${id}.webp`,
+                author: "Example Photographer",
+                sourceUrl:
+                  "https://commons.wikimedia.org/wiki/File:Example.webp",
+                license: "CC BY-SA 4.0",
+                licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
               },
       },
     });
@@ -47,10 +43,10 @@ test("automatic photos load lazily for public viewers with credits, stay out of 
   const first = page.locator("article").first();
   await expect(first.locator(".photo > img")).toHaveAttribute(
     "src",
-    /googleusercontent/,
+    /upload.wikimedia/,
   );
   await expect(
-    first.getByRole("link", { name: "Example Photographer" }),
+    first.getByRole("link", { name: "Wikimedia Commons" }),
   ).toBeVisible();
   expect(ids).toContain(places[0].id);
   expect(ids).not.toContain(places.at(-1)!.id);
@@ -62,19 +58,18 @@ test("automatic photos load lazily for public viewers with credits, stay out of 
   await page.locator("article").last().scrollIntoViewIfNeeded();
   await expect(
     page.locator("article").last().locator(".photo > img"),
-  ).toHaveAttribute("src", /googleusercontent/);
+  ).toHaveAttribute("src", /upload.wikimedia/);
   await first.scrollIntoViewIfNeeded();
   await first
     .getByRole("button", { name: "View Photo Cafe 1", exact: true })
     .click();
   await expect(
     page.getByRole("dialog").locator(".photo > img"),
-  ).toHaveAttribute("src", /googleusercontent/);
+  ).toHaveAttribute("src", /upload.wikimedia/);
   await expect(
-    page
-      .getByRole("dialog")
-      .getByRole("link", { name: "Example Photographer" }),
-  ).toHaveAttribute("href", "https://maps.google.com/contributor/example");
+    page.getByRole("dialog").getByRole("link", { name: "CC BY-SA 4.0" }),
+  ).toHaveAttribute("href", "https://creativecommons.org/licenses/by-sa/4.0/");
+  expect(ids.filter((id) => id === places[0].id)).toHaveLength(1);
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Close dialog" })
@@ -85,7 +80,7 @@ test("automatic photos load lazily for public viewers with credits, stay out of 
   const chunks = [];
   for await (const chunk of stream!) chunks.push(chunk);
   const exported = Buffer.concat(chunks).toString();
-  expect(exported).not.toContain("googleusercontent");
+  expect(exported).not.toContain("upload.wikimedia");
   expect(exported).not.toContain("Example Photographer");
   await page.getByRole("link", { name: "Map", exact: true }).click();
   await expect(page.locator(".leaflet-marker-icon")).toHaveCount(18);
@@ -96,7 +91,10 @@ test("automatic photos load lazily for public viewers with credits, stay out of 
     .getByRole("button", { name: "View place" })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.locator(".google-photo-credit")).toHaveCount(0);
-  await expect(page.getByRole("dialog")).toContainText("Category illustration");
+  await expect(
+    page.getByRole("dialog").locator(".photo > img"),
+  ).toHaveAttribute("src", /upload.wikimedia/);
+  await expect(page.getByRole("dialog")).toContainText("Example Photographer");
+  await expect(page.getByRole("dialog")).toContainText("CC BY-SA 4.0");
   expect(ids).toHaveLength(beforeMapDetails);
 });

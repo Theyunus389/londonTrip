@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
 
-it("enforces an atomic, UTC-month, service-only request cap that cannot exceed 800", async () => {
+it("keeps the historical, now-unused Google counter migration restricted and capped", async () => {
   const db = new PGlite();
   try {
     await db.exec(

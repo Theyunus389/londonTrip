@@ -24,22 +24,23 @@ export default function Privacy() {
         external image and map providers can disclose your IP address to them.
       </p>
       <p>
-        When Google photos are enabled, places without an uploaded or built-in
-        photograph may be looked up using Google Maps Platform. The lookup sends
-        the place name, address or area and saved coordinates to Google. It does
-        not send your notes or editing PIN. Loading a Google photograph also
-        connects your browser to Google’s image service. Google photos and
-        attribution are displayed during your visit and are not saved into the
-        shared list or included in exports.
+        Places without an uploaded or built-in photograph may be looked up using
+        Wikipedia and Wikimedia Commons. The lookup sends the place name to
+        Wikimedia; saved coordinates are compared on this website’s server. Your
+        notes and editing PIN are not sent. Loading a photograph connects your
+        browser to Wikimedia’s image service. Public photo metadata may be
+        cached on the server for one day and in browser memory for thirty
+        minutes. These automatic results are not written into your saved list or
+        exports.
       </p>
       <p>
-        Google’s handling of this information is described in the{" "}
+        Wikimedia’s handling of this information is described in the{" "}
         <a
-          href="https://policies.google.com/privacy"
+          href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Google Privacy Policy
+          Wikimedia Privacy Policy
         </a>
         .
       </p>
